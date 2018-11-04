@@ -4,24 +4,20 @@ import Greeting from './Greeting';
 import Clock from './Clock';
 import Weather from './Weather';
 import Signin from './SignIn';
+import Settings from './Settings';
 import BGImages from './BGImages';
 import ImageSource from './ImageSource';
 import './App.css';
-
-//Manipulate background
-
-//document.body.style.backgroundImage = `url(${BGImages.morning[4].url})`;
-
-//Halifax code 6324729
 
 
 const initialState = {
       isSignedIn: false,
       route: 'guest',
       user: {
+        id: 0,
         name: 'Stranger',
         locationID: 'New York',
-        celsius: true,
+        celsius: false,
         email: ''
       },
       time: new Date(),
@@ -31,28 +27,56 @@ const initialState = {
 class App extends Component {
   constructor() {
     super();
-    //Todo: Get user and location ID from server. Hardcoded to Halifax right now.
     this.state = initialState;
   }
 
-  
+  componentWillMount() {
+        this.getCookie();
+  }
 
   componentDidMount() {
-    this.timerID = setInterval(() =>
-    this.tick(),
-    1000);
-
     //set window height
     document.body.style.height = `${this.state.height}px`;
     //Change background on mount
     document.body.style.backgroundImage = `${this.getBG(this.state.time)}`;
   }
 
-  tick() {
-    this.setState({
-      time: new Date()
-    });
+  
+
+  //Check for cookies on launch
+  getCookie() {
+    fetch('/getCookie')
+    .then(res => res.json())
+    .then(cookie => {
+      if(cookie.email) {
+         // If a cookie is present, validate User
+      fetch('/signin', {
+        method: 'post',
+        headers: {'content-type': 'application/json'},
+        credentials:'include',
+        body: JSON.stringify({
+          email: cookie.email,
+          password: cookie.password
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if(data.id) {
+            this.loadUser(data);
+            this.onRouteChange('home');
+          } 
+        })
+      } else {
+        return;
+      }
+
+    })
   }
+
+  deleteCookie() {
+    fetch('/deleteCookie')
+  }
+    
 
   getBG(time) {
     //Changes the background image based on the time of day
@@ -80,11 +104,15 @@ class App extends Component {
   }
 
   onRouteChange = (route) => {
-    console.log(route);
     if(route === 'signOut') {
+      //Clear cookies
+      this.deleteCookie();
+      //Send user back to guest page
       this.setState(initialState);
     } else if (route === 'home') {
-      this.setState({isSignedIn: true});
+      this.setState({
+        isSignedIn: true,
+      });
     } 
     this.setState({route: route});
   }
@@ -92,7 +120,7 @@ class App extends Component {
   loadUser = (data) => {
     this.setState({ user: {
       name: data.name,
-      locationID: data.locationID,
+      locationID: data.locationid,
       celsius: data.celsius,
       email: data.email
     }})
@@ -103,25 +131,31 @@ class App extends Component {
 
     if(this.state.route === 'home') {
       display = (<div className = "mainDisplay" >
-            <Greeting time = {this.state.time} user = {this.state.user.name} />
-            <Clock time = {this.state.time} />
-            <Weather locationID = {this.state.user.locationID} />
+            <Greeting time = {this.state.time.getHours()} user = {this.state.user.name} />
+            <Clock />
+            <Weather locationID = {this.state.user.locationID} celsius = {this.state.user.celsius} />
           </div>);
     } else if (this.state.route === 'signIn') {
       display = (
         <Signin onRouteChange = {this.onRouteChange} loadUser = {this.loadUser}/>
       );
-    } else {
+    } else if (this.state.route === 'settings') {
+      display = (
+      <Settings onRouteChange = {this.onRouteChange} loadUser = {this.loadUser} user = {this.state.user} />
+      );
+    }
+
+    else {
       display = (<div className = "guestDisplay" >
-            <Greeting time = {this.state.time} user = {this.state.user.name} />
+            <Greeting time = {this.state.time.getHours()} user = {this.state.user.name} />
             <Clock time = {this.state.time} />
-            <Weather locationID = {this.state.user.locationID} />
+            <Weather locationID = {this.state.user.locationID} celsius = {this.state.user.celsius} />
             <p>Welcome to StartR, a beautiful way to start your browsing. Just sign up and set StartR as your homepage, and you can start your browsing with beautiful photos and weather info for your city.</p>
           </div>);
     }
     return (
       <div>
-        <NavBar isSignedIn = {this.state.isSignedIn} onRouteChange = {this.onRouteChange} />
+        <NavBar isSignedIn = {this.state.isSignedIn} onRouteChange = {this.onRouteChange} route = {this.state.route}/>
           
         {display}
         

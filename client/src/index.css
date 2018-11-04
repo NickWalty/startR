@@ -155,7 +155,7 @@ body {
 	padding: 20px 20px 20px 20px;
 	margin-left:auto;
 	margin-right:auto;
-	margin-top:125px;
+	margin-top:40px;
 	color: white;
 	text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
 	font-size: 1.25em;
@@ -204,6 +204,7 @@ body {
 
 #register {
 	height: 35px;
+	margin:auto;
 	width: auto;
 	color: black;
 	background-color: white;
@@ -213,4 +214,74 @@ body {
 #register:hover {
 	color:white;
 	background-color: orange;
+}
+
+#updatePass {
+	height: 35px;
+	margin:auto;
+	width: auto;
+	color: black;
+	background-color: white;
+	cursor: pointer;
+}
+
+#updatePass:hover {
+	color:white;
+	background-color: orange;
+}
+
+#updateSettings {
+	height: 35px;
+	margin:auto;
+	width: auto;
+	color: black;
+	background-color: white;
+	cursor: pointer;
+}
+
+#updateSettings:hover {
+	color:white;
+	background-color: orange;
+}
+
+.radios {
+	text-align:left;
+	display: grid;
+	justify-content: start;
+	grid-template-columns: 40% 60%;
+}
+.settings {
+	font-family: 'Montserrat', sans-serif;
+  	display:flex;
+	flex-direction: column;
+	text-align: center;
+	width:40%;
+	padding: 20px 20px 20px 20px;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:40px;
+	color: white;
+	text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+	font-size: 1.25em;
+	line-height: 0.8;
+	background-color: rgba(0,0,0,0.25);
+	border-radius: 10px;
+}
+
+.settings input{
+	font-family: 'Montserrat', sans-serif;
+	margin-top: 10px;
+	width:auto;
+	color: grey;
+	border-style: none;
+	border-radius:5px 5px 5px 5px;
+	font-size: 1em;
+	height: 25px;
+	padding-left: 10px;
+	padding-right: 10px;
+
+}
+
+.settings p {
+	padding-right: 15px;
 }
